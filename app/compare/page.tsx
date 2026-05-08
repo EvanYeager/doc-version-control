@@ -10,18 +10,9 @@ export default function ComparePage() {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   // Read URL Params
   // When coming from version history Compare button
   // Pre-fills assignment dropdown and Version A automatically
-  
   const urlAssignmentId = searchParams.get("assignmentId") || "";
   const urlVersionA     = searchParams.get("versionA")     || "";
 
@@ -39,6 +30,13 @@ export default function ComparePage() {
 
   // Route and Load
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Route protection and load assignments
+  useEffect(() => {
+    if (!mounted) return;
+
     const username = localStorage.getItem("username");
     if (!username) {
       router.push("/login");
@@ -57,7 +55,7 @@ export default function ComparePage() {
       }
     }
     fetchAssignments();
-  }, []);
+  }, [mounted]);
 
   // Load versions when assignment changes
   useEffect(() => {
@@ -146,7 +144,6 @@ export default function ComparePage() {
       }
 
       // Extract text from both files simultaneously
-      // mammoth handles .docx, blob.text() handles .txt
       const [contentA, contentB] = await Promise.all([
         extractText(versionAData.file_path, token!),
         extractText(versionBData.file_path, token!)
@@ -164,12 +161,9 @@ export default function ComparePage() {
   }
 
   // Downloads a specific version file
-  // Reuses same download logic as version history page
-  // Called when user clicks Download Version A or B
   async function handleDownload(versionNumber: string) {
     const token = localStorage.getItem("token");
 
-    // Find the file_path for the selected version number
     const versionData = versions.find(
       (v: any) => v.version_number.toString() === versionNumber.toString()
     );
@@ -199,7 +193,16 @@ export default function ComparePage() {
     }
   }
 
-  if (!mounted) return null;
+  // Loading state - render after all hooks have been called
+  if (!mounted) {
+    return (
+      <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black min-h-screen">
+        <main className="flex flex-1 flex-col w-full max-w-7xl mx-auto py-8 px-6">
+          <div className="text-zinc-400">Loading...</div>
+        </main>
+      </div>
+    );
+  }
 
   return (
   <Suspense fallback={<div>Loading...</div>}>
@@ -290,7 +293,6 @@ export default function ComparePage() {
                     </option>
                   ))}
                 </select>
-                {/* Download button - only shown when version B is selected */}
                 {versionB && (
                   <button
                     onClick={() => handleDownload(versionB)}
@@ -466,5 +468,3 @@ export default function ComparePage() {
   </Suspense>
   );
 }
-
-
