@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ReactDiffViewer from "react-diff-viewer-continued";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer-continued";
 import mammoth from "mammoth";
 
 export default function ComparePage() {
@@ -377,6 +377,7 @@ export default function ComparePage() {
                 oldValue={textA}
                 newValue={textB}
                 splitView={splitView}
+                compareMethod={DiffMethod.WORDS}
                 leftTitle={`Version ${versionA}`}
                 rightTitle={`Version ${versionB}`}
                 styles={{
