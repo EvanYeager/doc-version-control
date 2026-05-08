@@ -1,19 +1,37 @@
 # doc-version-control
-Version control for plaintext and .docx files. Allows users to upload documents and view changes at-a-glance.
+A cloud-deployed web application for tracking versions of plaintext (.txt) and Microsoft Word (.docx) documents. Users can upload successive drafts of an assignment, browse the version history, and download or compare any version.
 
-## Backend
+## Architecture 
+This the **frontend** repository, the application is split across two repos:
 
-The backend for this project is located at:
-https://github.com/EvanYeager/doc-vc-backend
+**Frontend** (this repo): Next.js application providing the user interface
+**Backend**: https://github.com/EvanYeager/doc-vc-backend
 
-------
+The full system uses:
+**Next.js** frontend deployed to Azure App Service
+**Azure Functions** backend (HTTP-triggered, Node.js runtime)
+**Azure SQL Database** for users, assignments, and version metadata
+**Azure Blob Storage** for actual document files
+**JWT-based authentication** for protected upload endpoints
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+*This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+## Prerequisities
+- Node.js 18+
+- A running instance of the [backend](https://github.com/EvanYeager/doc-vc-backend) (or access to deployed one)
 
+### Setup 
+
+1. Clone the repo:
+```bash
+   git clone https://github.com/EvanYeager/doc-version-control.git
+   cd doc-version-control
+   npm install
+```
+2. Create `.env.local` in the project root:
+3. Run development server:
 ```bash
 npm run dev
 # or
@@ -23,9 +41,15 @@ pnpm dev
 # or
 bun dev
 ```
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
+- `app/page.tsx` — Dashboard (lists user's assignments)
+- `app/login/page.tsx` — Login form
+- `app/upload/page.tsx` — Document upload (chains uploadFile + makeVersion API calls)
+- `app/documents/[id]/page.tsx` — Assignment detail with version history
+- `app/compare/page.tsx` — Version diff viewer (planned)
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
@@ -52,6 +76,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Azure Redeploy Trigger
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
