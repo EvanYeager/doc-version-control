@@ -383,6 +383,12 @@ export default function ComparePage() {
                 leftTitle={`Version ${versionA}`}
                 rightTitle={`Version ${versionB}`}
                 styles={{
+                  wordAdded: {
+                    background: '#4caf7d',  // darker green for added words
+                  },
+                  wordRemoved: {
+                    background: '#e05c5c',  // darker red for removed words
+                  },
                   variables: {
                     dark: {
                       diffViewerBackground: '#18181b',
